@@ -151,6 +151,7 @@ def api_IGBE(
         view='json',
         formato='application/vnd.geo+json',
         intrarregiao='municipio',
+        file_format=['.csv', '.json', '.geojson'],
         file_path='./ibge/'
     ):
     """_summary_
@@ -267,18 +268,16 @@ def api_IGBE(
                     pbar.update()
             pbar.close()
         
-        for f in ['.shp', '.csv', '.json', '.geojson']:
+        if isinstance(file_format, str):
+            file_format = [file_format]
+        
+        for f in file_format:
             __save_file(
                 content,
                 f'{UF}_malhas',
                 format=f,
                 file_path=file_path
             )
-
-        # __save_file(content, UF, format='.shp', file_path=file_path)
-        # __save_file(content, UF, format='.csv', file_path=file_path)
-        # __save_file(content, UF, format='.json', file_path=file_path)
-        # __save_file(content, UF, format='.geojson', file_path=file_path)
     
     else:
         print('API_KEY não reconhecida')
@@ -316,11 +315,40 @@ if __name__ == '__main__':
         'TO',
     ]
 
+    print('Malhas')
     pbar = tqdm(total=len(UFs), desc='Coletando informações dos estados do Brasil: ')
 
     for UF in UFs:
         
-        api_IGBE(UF, API_KEY='malhas')
+        api_IGBE(
+            UF,
+            API_KEY='malhas',
+            orderBy='nome',
+            view='json',
+            formato='application/vnd.geo+json',
+            intrarregiao='municipio',
+            file_format=['.csv', '.json', '.geojson'],
+            file_path='./ibge/malhas/'
+        )
+        pbar.update()
+
+    pbar.close()
+
+    print('Distritos')
+    pbar = tqdm(total=len(UFs), desc='Coletando informações dos estados do Brasil: ')
+
+    for UF in UFs:
+        
+        api_IGBE(
+            UF,
+            API_KEY='distritos',
+            orderBy='nome',
+            view='json',
+            formato='application/vnd.geo+json',
+            intrarregiao='municipio',
+            file_format=['.csv', '.json', '.geojson'],
+            file_path='./ibge/distritos/'
+        )
         pbar.update()
 
     pbar.close()
